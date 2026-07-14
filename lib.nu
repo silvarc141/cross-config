@@ -7,7 +7,7 @@ export def "note dated" [date_target: string = "today" ] {
     let date = $date_target | date from-human | format date "%Y-%m-%d"
 
     let template_path = $"(get_local_path)/templates/dated.md"
-    let initial_content = if ($template_path | path exists) { open $template_path } else ""
+    let initial_content = if ($template_path | path exists) { cat $template_path } else ""
 
     open_note $"(get_local_path)/dated/($date).md" $initial_content
 }
