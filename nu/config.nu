@@ -30,7 +30,7 @@ $env.config = {
   ],
   menus: [
     {
-      marker: 󰟃 ,
+      marker: "󰟃 ",
       name: completion_menu,
       only_buffer_difference: false,
       style: {
@@ -44,7 +44,7 @@ $env.config = {
       }
     },
     {
-      marker: 󰋗 ,
+      marker: "󰋗 ",
       name: help_menu,
       only_buffer_difference: true,
       style: {
@@ -62,7 +62,7 @@ $env.config = {
       }
     },
     {
-      marker: 󱍷 ,
+      marker: "󱍷 ",
       name: history_menu,
       only_buffer_difference: true,
       style: {
