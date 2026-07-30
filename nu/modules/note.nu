@@ -1,6 +1,14 @@
-export def note [] {
-    help note
-}
+# Depends on: ripgrep (rg), git, git-crypt
+# Required env:
+# - NOTES_NU_LOCAL_PATH - local directory where notes will be stored
+# - NOTES_NU_REMOTE_URL - url to a git-crypt-encrypted notes repo
+# - NOTES_NU_CRYPT_KEY_PATH - path to the key that allows notes repo decryption
+# - EDITOR - markdown text editor
+
+# Sync, find and edit markdown notes.
+#
+# You must use one of the following subcommands. Using this command as-is will only produce this help message.
+export def note [] { help note }
 
 # Create or edit existing note for a date.
 export def "note dated" [date_target: string = "today" ] {
