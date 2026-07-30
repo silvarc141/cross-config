@@ -1,14 +1,15 @@
 # WARNING: OUTDATED
 
-# Run with something like this:
-# . $(curl -s https://raw.githubusercontent.com/silvarc141/notes-nu/main/termux.sh)
+termux-change-repo
+pkg upgrade -y
+pkg install nushell git git-crypt ripgrep 
 
-# Other optional setup:
-# termux-change-repo
-# pkg upgrade -y
+# Optional setup:
 # chsh nu
 
-pkg install nushell git git-crypt ripgrep 
+# Run with something like this:
+# . $(curl -s https://raw.githubusercontent.com/silvarc141/cross-config/main/termux.sh)
+
 
 # nu -c '
 # let lib = http get https://raw.githubusercontent.com/silvarc141/notes-nu/main/lib.nu

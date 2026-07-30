@@ -1,5 +1,5 @@
-use ./modules/shell.nu *
-use ./modules/note.nu *
+use ./modules/module-shell.nu *
+use ./modules/module-note.nu *
 
 $env.PROMPT_INDICATOR = $'(ansi {fg: cyan_dimmed})󰬪 '
 $env.config = {
