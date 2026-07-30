@@ -1,3 +1,5 @@
+# Sync, find and edit markdown notes.
+#
 # Depends on: ripgrep (rg), git, git-crypt
 # Required env:
 # - NOTES_NU_LOCAL_PATH - local directory where notes will be stored
@@ -5,13 +7,8 @@
 # - NOTES_NU_CRYPT_KEY_PATH - path to the key that allows notes repo decryption
 # - EDITOR - markdown text editor
 
-# Sync, find and edit markdown notes.
-#
-# You must use one of the following subcommands. Using this command as-is will only produce this help message.
-export def note [] { help note }
-
 # Create or edit existing note for a date.
-export def "note dated" [date_target: string = "today" ] {
+export def dated [date_target: string = "today" ] {
     let date = $date_target | date from-human | format date "%Y-%m-%d"
 
     let template_path = $"(get_local_path)/templates/dated.md"
@@ -21,7 +18,7 @@ export def "note dated" [date_target: string = "today" ] {
 }
 
 # Create a new note with a title.
-export def "note named" [title: string] {
+export def named [title: string] {
     let date = date now | format date "%Y-%m-%d-%H-%M-%S"
     let note_path = $"(get_local_path)/named/($date).md" 
 
@@ -33,12 +30,12 @@ export def "note named" [title: string] {
 }
 
 # Search through all notes content using ripgrep.
-export def "note grep" [query: string] { 
+export def grep [query: string] { 
     ^rg -i $query (get_local_path)
 }
 
 # List named notes with titles matching the query.
-export def "note list" [title_query: string = ""] {
+export def list [title_query: string = ""] {
     ^rg $"^# .*($title_query).*" -m 1 -i $"(get_local_path)/named" --json 
     | lines 
     | each { from json } 
@@ -52,7 +49,7 @@ export def "note list" [title_query: string = ""] {
 }
 
 # Sync note repository.
-export def "note sync" [] {
+export def sync [] {
     let local_path = get_local_path
     if not ($local_path | path exists) { mkdir ($local_path) }
     cd $local_path
