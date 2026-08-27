@@ -109,9 +109,10 @@ alias glt = ^git log --graph --full-history --all --oneline --simplify-by-decora
 alias ga = ^git add
 alias gaa = ^git add -A
 alias gc = ^git commit
-alias gcn = ^git commit --amend
 alias gcm = ^git commit -m
+alias gca = ^git commit -a
 alias gcam = ^git commit -am
+alias gcn = ^git commit --amend
 alias gp = ^git push
 alias gpl = ^git pull
 
