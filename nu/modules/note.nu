@@ -9,7 +9,7 @@
 
 # Create or edit existing note for a date.
 export def dated [date_target: string = "today" ] {
-    let date = $date_target | date from-human | format date "%Y-%m-%d"
+    let date = $date_target | date from-human | format date "%F"
 
     let template_path = $"(get_local_path)/templates/dated.md"
     let initial_content = if ($template_path | path exists) { cat $template_path } else ""
@@ -19,7 +19,7 @@ export def dated [date_target: string = "today" ] {
 
 # Create a new note with a title.
 export def named [title: string] {
-    let date = date now | format date "%Y-%m-%d-%H-%M-%S"
+    let date = date now | format date "%F_%T_%f"
     let note_path = $"(get_local_path)/named/($date).md" 
 
     let template_path = $"(get_local_path)/templates/named.md"

@@ -116,15 +116,17 @@ alias gcn = ^git commit --amend
 alias gp = ^git push
 alias gpl = ^git pull
 
-# Edit files at paths provided from stdin using $env.EDITOR
+# Try edit a file at one of the paths provided from stdin.
+# Passes the result to $env.EDITOR.
 export def "edit" [] {
     let input = $in
     let inputType = $input | describe
 
     let paths = if ($inputType | str contains "table") {
-        if "path" in ($input | columns) {
+        let cols = $input | columns
+        if "path" in $cols {
             $input.path
-        } else if "name" in ($input | columns) {
+        } else if "name" in $cols {
             $input.name
         } else {
             error make {msg: "Table input must have a 'path' or 'name' column"}
