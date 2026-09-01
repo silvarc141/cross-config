@@ -1,6 +1,7 @@
 # WIP
+export def password [] { help password }
 
-export def "lock" [] {
+export def "password lock" [] {
     let busctl = get_busctl
     if $busctl != "" {
         ^$busctl --user call org.keepassxc.KeePassXC.MainWindow /keepassxc org.keepassxc.KeePassXC.MainWindow lockAllDatabases
@@ -9,7 +10,7 @@ export def "lock" [] {
     }
 }
 
-export def "open-default" [db_path: string] {
+export def "password open-default" [db_path: string] {
     let busctl = get_busctl
     if $busctl != "" {
         ^$busctl --user call org.keepassxc.KeePassXC.MainWindow /keepassxc org.keepassxc.KeePassXC.MainWindow openDatabase s $db_path

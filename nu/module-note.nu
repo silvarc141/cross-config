@@ -1,4 +1,4 @@
-# Sync, find and edit markdown notes.
+# Commands to sync, find and edit markdown notes.
 #
 # Depends on: ripgrep (rg), git, git-crypt
 # Required env:
@@ -6,9 +6,10 @@
 # - NOTES_NU_REMOTE_URL - url to a git-crypt-encrypted notes repo
 # - NOTES_NU_CRYPT_KEY_PATH - path to the key that allows notes repo decryption
 # - EDITOR - markdown text editor
+export def note [] { help note }
 
 # Create or edit existing note for a date.
-export def dated [date_target: string = "today" ] {
+export def "note daily" [date_target: string = "today" ] {
     let date = $date_target | date from-human | format date "%F"
 
     let template_path = $"(get_local_path)/templates/dated.md"
@@ -18,7 +19,7 @@ export def dated [date_target: string = "today" ] {
 }
 
 # Create a new note with a title.
-export def named [title: string] {
+export def "note new" [title: string] {
     let date = date now | format date "%F_%T_%f"
     let note_path = $"(get_local_path)/named/($date).md" 
 
@@ -30,18 +31,14 @@ export def named [title: string] {
 }
 
 # Search through all notes content using ripgrep.
-export def grep [query: string] { 
+export def "note grep" [query: string] { 
     ^rg -i $query (get_local_path)
 }
 
 # List named notes with titles matching the query.
-export def list [title_query: string = ""] {
+export def "note list" [title_query: string = ""] {
     ^rg $"^# .*($title_query).*" -m 1 -i $"(get_local_path)/named" --json 
-    | lines 
-    | each { from json } 
-    | where type == "match" 
-    | get data 
-    | flatten 
+    | from_rg_json
     | select lines_text text 
     | rename title path
     | update title { str trim | str substring 2.. }
@@ -49,7 +46,7 @@ export def list [title_query: string = ""] {
 }
 
 # Sync note repository.
-export def sync [] {
+export def "note sync" [] {
     let local_path = get_local_path
     if not ($local_path | path exists) { mkdir ($local_path) }
     cd $local_path
@@ -80,6 +77,15 @@ export def sync [] {
     }
     ^git pull --rebase origin main --autostash -X ours
     ^git push origin main
+}
+
+def from_rg_json [] {
+    $in 
+    | lines 
+    | each { from json } 
+    | where type == "match" 
+    | get data 
+    | flatten 
 }
 
 def open_note [relative_path: string, initial_content: string = "", title: string = ""] {
