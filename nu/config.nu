@@ -116,11 +116,22 @@ alias gcn = ^git commit --amend
 alias gp = ^git push
 alias gpl = ^git pull
 
-# Try edit a file at one of the paths provided from stdin.
-# Passes the result to $env.EDITOR.
+# Get a single path from stdin and pass it to $env.EDITOR.
+#
+# Works differently depending on stdin type:
+# - string: uses lines of the string as paths.
+# - list: uses list elements as paths.
+# - for table: uses "path" or "name" column as paths and "title" column for interactive selection display name.
 export def "edit" [] {
     let input = $in
     let inputType = $input | describe
+
+    let display_names = if ($inputType | str contains "table") {
+        let cols = $input | columns
+        if (("path" in $cols or "name" in $cols) and "title" in $cols) {
+            $input.title 
+        }
+    }
 
     let paths = if ($inputType | str contains "table") {
         let cols = $input | columns
@@ -141,12 +152,24 @@ export def "edit" [] {
         error make {msg: "Unsupported input type. Please provide a string, list, or table."}
     }
 
-    let clean_paths = $paths | each { into string } | where ($it | str length) > 0
+    let clean_paths = $paths | each { into string } 
+        | where ($it | str length) > 0 
+        | where ($it | path exists)
 
     if ($clean_paths | is-empty) {
-        print "No valid file paths to edit."
+        print "No non-empty paths to edit."
         return
     }
 
-    ^$env.EDITOR ...$clean_paths
+    let index = if ($clean_paths | length) == 1 {
+        0
+    } else if ($display_names | is-empty) {
+        $clean_paths | input list --index --no-footer
+    } else {
+        $display_names | input list --index --no-footer
+    }
+
+    if ($index | is-empty) { return }
+
+    ^$env.EDITOR ($clean_paths | get $index )
 }
