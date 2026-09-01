@@ -8,7 +8,8 @@
 # - EDITOR - markdown text editor
 export def note [] { help note }
 
-# Create or edit existing note for a date.
+# Create or edit an existing note for a date.
+# Date argument will be processed using nushell's "date from-human", allowing for input like "2002-10-12", "today", "yesterday" and more.
 export def "note daily" [date_target: string = "today" ] {
     let date = $date_target | date from-human | format date "%F"
 
@@ -18,7 +19,7 @@ export def "note daily" [date_target: string = "today" ] {
     open_note $"(get_local_path)/dated/($date).md" $initial_content
 }
 
-# Create a new note with a title.
+# Create a new titled note.
 export def "note new" [title: string] {
     let date = date now | format date "%F_%T_%f"
     let note_path = $"(get_local_path)/named/($date).md" 
@@ -30,12 +31,7 @@ export def "note new" [title: string] {
     open_note $note_path $initial_content ($title | str capitalize)
 }
 
-# Search through all notes content using ripgrep.
-export def "note grep" [query: string] { 
-    ^rg -i $query (get_local_path)
-}
-
-# List named notes with titles matching the query.
+# List titled notes whose titles match the provided query.
 export def "note list" [title_query: string = ""] {
     ^rg $"^# .*($title_query).*" -m 1 -i $"(get_local_path)/named" --json 
     | from_rg_json
@@ -43,6 +39,11 @@ export def "note list" [title_query: string = ""] {
     | rename title path
     | update title { str trim | str substring 2.. }
     | sort
+}
+
+# Search through all notes content using ripgrep.
+export def "note grep" [ripgrep_query: string] {
+    ^rg -i $ripgrep_query (get_local_path)
 }
 
 # Sync note repository.
