@@ -57,7 +57,7 @@ export def sync [] {
     if not (".git" | path exists) {
         ^git init -b main
         ^git remote add origin (get_remote_url)
-        
+
         if (^git fetch | complete).exit_code != 0 {
             rm -rf .git
             error make {msg: "Git fetch failed. Removing changes and exiting."}
