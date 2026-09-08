@@ -21,7 +21,7 @@ export def "note daily" [date_target: string = "today" ] {
 
 # Create a new titled note.
 export def "note new" [title: string] {
-    let date = date now | format date "%F_%T_%f"
+    let date = date now | format date "%F_%H-%M-%S_%f"
     let note_path = $"(get_local_path)/named/($date).md" 
 
     let template_path = $"(get_local_path)/templates/named.md"
@@ -33,8 +33,8 @@ export def "note new" [title: string] {
 
 # List titled notes whose titles match the provided query.
 export def "note list" [title_query: string = ""] {
-    ^rg $"^# .*($title_query).*" -m 1 -i $"(get_local_path)/named" --json 
-    | from_rg_json
+    ^rg $"^#.*($title_query).*" -m 1 -i $"(get_local_path)/named" --json 
+    | from ripgrep
     | select lines_text text 
     | rename title path
     | update title { str trim | str substring 2.. }
@@ -80,7 +80,8 @@ export def "note sync" [] {
     ^git push origin main
 }
 
-def from_rg_json [] {
+# Parse output of "ripgrep --json"
+def "from ripgrep" [] {
     $in 
     | lines 
     | each { from json } 
