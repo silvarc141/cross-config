@@ -41,9 +41,20 @@ export def "note list" [title_query: string = ""] {
     | sort
 }
 
-# Search through all notes content using ripgrep.
+# Search through all notes content for matching strings using ripgrep.
 export def "note grep" [ripgrep_query: string] {
-    ^rg -i $ripgrep_query (get_local_path)
+    ^rg -i $ripgrep_query (get_local_path) --json
+    | from ripgrep
+    | update text { path expand }
+    | update lines_text { |row|
+        let start = $row.submatches.start
+        let end = $row.submatches.end - 1
+        $row.lines_text 
+        | colorize substring ($start)..($end) "red"
+        | str trim
+    }
+    | select lines_text text line_number
+    | rename match path line
 }
 
 # Sync note repository.
@@ -88,6 +99,15 @@ def "from ripgrep" [] {
     | where type == "match" 
     | get data 
     | flatten 
+}
+
+# Colorize a part of a string using an ansi code
+export def "colorize substring" [range: range, code: string = "red"] {
+    let text = $in
+    let before = ($text | str substring 0..<($range | first))
+    let target = ($text | str substring $range)
+    let after  = ($text | str substring (($range | last) + 1)..)
+    $"(ansi reset)($before)(ansi $code)($target)(ansi reset)($after)"
 }
 
 def open_note [relative_path: string, initial_content: string = "", title: string = ""] {
