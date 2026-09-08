@@ -102,7 +102,7 @@ def "from ripgrep" [] {
 }
 
 # Colorize a part of a string using an ansi code
-export def "colorize substring" [range: range, code: string = "red"] {
+def "colorize substring" [range: range, code: string = "red"] {
     let text = $in
     let before = ($text | str substring 0..<($range | first))
     let target = ($text | str substring $range)
