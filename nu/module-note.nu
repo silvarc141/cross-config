@@ -33,7 +33,7 @@ export def "note new" [title: string] {
 
 # List titled notes whose titles match the provided query.
 export def "note list" [title_query: string = ""] {
-    ^rg $"^#.*($title_query).*" -m 1 -i $"(get_local_path)/named" --json 
+    ^rg $"^# .*($title_query).*" -m 1 -i $"(get_local_path)/named" --json 
     | from ripgrep
     | select lines_text text 
     | rename title path
